@@ -14,7 +14,7 @@ const MONGODB_URI = process.env.MONGODB_URI;
 console.log('connecting to', MONGODB_URI);
 
 mongoose
-    .connect(MONGODB_URI, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true })
+    .connect(MONGODB_URI)
     .then(() => {
         console.log('connected to MongoDB');
     })
@@ -237,7 +237,7 @@ const resolvers = {
             const books = await Book.find({}).populate('author');
             return books;
         },
-        allAuthors: () => Author.find({}),
+        allAuthors: async () => await Author.find({}),
     },
     Author: {
         bookCount: async (root) => {
