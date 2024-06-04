@@ -135,6 +135,7 @@ const typeDefs = `
     value: String!
   }
   type Mutation {
+    addAuthor(name: String!): Author!
     createUser(
         username: String!
         favoriteGenre: String!
@@ -178,6 +179,11 @@ const typeDefs = `
 
 const resolvers = {
     Mutation: {
+        addAuthor: async (root, args) => {
+            const author = new Author({ name: args.name });
+            await author.save();
+            return author;
+        },
         createUser: async (root, args) => {
             const user = new User({ username: args.username, favoriteGenre: args.favoriteGenre });
             return user.save();
@@ -199,6 +205,7 @@ const resolvers = {
             return { value: jwt.sign(userForToken, JWT_SECRET) };
         },
         addBook: async (root, args, context) => {
+            console.log('args', args);
             const currentUser = context.currentUser;
             if (!currentUser) {
                 throw new GraphQLError('Not authenticated', {
@@ -208,6 +215,7 @@ const resolvers = {
                 });
             }
             let author = await Author.findOne({ name: args.author.name });
+            console.log('author', author);
             if (!author) {
                 if (args.author.name.length < 4) {
                     throw new GraphQLError('Author name must be at least 4 characters long', {
@@ -228,7 +236,8 @@ const resolvers = {
             }
             const book = new Book({ ...args, author: author._id });
             console.log('book', book);
-            return book.save();
+            await book.save();
+            return book;
         },
         editAuthor: async (root, args, context) => {
             const currentUser = context.currentUser;
