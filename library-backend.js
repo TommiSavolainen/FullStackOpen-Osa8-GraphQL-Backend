@@ -21,6 +21,11 @@ const User = require('./models/user');
 // const Author = require('./models/author');
 // const { GraphQLError } = require('graphql');
 
+// Seuraa kyselyitä ja niiden tuloksia:
+// mongoose.set('debug', (collectionName, method, query, doc) => {
+//     console.log(`${collectionName}.${method}`, JSON.stringify(query), doc);
+// });
+
 require('dotenv').config();
 const MONGODB_URI = process.env.MONGODB_URI;
 const JWT_SECRET = process.env.JWT_SECRET;

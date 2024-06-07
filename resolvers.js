@@ -69,6 +69,8 @@ const resolvers = {
             console.log('book', book);
             await book.save();
             pubsub.publish('BOOK_ADDED', { bookAdded: book });
+            author.books = author.books.concat(book._id);
+            await author.save();
             return book;
         },
         editAuthor: async (root, args, context) => {
@@ -84,6 +86,8 @@ const resolvers = {
             if (!author) {
                 return null;
             }
+            console.log('args.setBornTo', args.setBornTo);
+            console.log('author', author);
             author.born = args.setBornTo;
             return author.save();
         },
@@ -116,11 +120,11 @@ const resolvers = {
             const books = await Book.find({}).populate('author');
             return books;
         },
-        allAuthors: async () => await Author.find({}),
+        allAuthors: async () => await Author.find({}).populate('books'),
     },
     Author: {
         bookCount: async (root) => {
-            const count = await Book.countDocuments({ author: root._id });
+            const count = await root.books.length;
             return count;
         },
     },
